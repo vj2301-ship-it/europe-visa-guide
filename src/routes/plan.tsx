@@ -43,7 +43,7 @@ interface CaseState {
 
 const initial: CaseState = {
   name: "",
-  passportA: "india",
+  passportA: "",
   passportB: "",
   status: "F-1 student",
   holdsSchengen: false,
