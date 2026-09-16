@@ -236,12 +236,12 @@ function PlanPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             {tripLt.weeks === 0
               ? "You can leave as soon as you have a ticket."
-              : `Allow about ${tripLt.weeks} weeks from today. Earliest realistic departure: ${fmtDate(earliest)}.`}
+              : `Allow about ${tripLt.weeks} weeks from today. Earliest realistic departure: ${fmtDate(earliest!)}.`}
           </p>
           {departure && tooLate && (
             <p className="mt-3 rounded-md border border-seal/40 bg-seal/10 px-3 py-2 text-sm">
               {fmtDate(departure)} is too soon for this country. The plan below uses{" "}
-              {fmtDate(earliest)} instead.
+              {fmtDate(earliest!)} instead.
             </p>
           )}
 
