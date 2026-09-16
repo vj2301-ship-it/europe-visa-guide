@@ -101,12 +101,16 @@ function PlanPage() {
   const schengen = ranked.filter((r) => r.country.bloc === "schengen").slice(0, 5);
   const outside = ranked.filter((r) => r.country.bloc !== "schengen").slice(0, 5);
 
+  const hasPassport = Boolean(form.passportA);
   const trip = countries.find((c) => c.slug === form.tripCountry) ?? countries[0]!;
-  const tripLt = leadTime(trip, held, holds);
+  const tripLt = hasPassport ? leadTime(trip, held, holds) : null;
   const departure = form.departure ? new Date(`${form.departure}T00:00:00`) : null;
-  const earliest = addWeeks(today, tripLt.weeks);
-  const tooLate = departure ? departure < earliest : false;
-  const planSteps = backPlan(trip, tripLt, departure && !tooLate ? departure : earliest);
+  const earliest = tripLt ? addWeeks(today, tripLt.weeks) : null;
+  const tooLate = Boolean(departure && earliest && departure < earliest);
+  const planSteps =
+    tripLt && earliest
+      ? backPlan(trip, tripLt, departure && !tooLate ? departure : earliest)
+      : [];
 
   return (
     <div className="min-h-screen">
@@ -191,7 +195,14 @@ function PlanPage() {
           </Field>
         </section>
 
-        {/* ---------------- earliest entry ---------------- */}
+        {!tripLt ? (
+          <p className="mt-10 rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
+            Please select your passport country above to see where you can go soonest and plan a
+            trip.
+          </p>
+        ) : (
+          <>
+            {/* ---------------- earliest entry ---------------- */}
         <h2 className="mt-12 text-2xl">
           {form.name ? `${form.name}, where you can go soonest` : "Where you can go soonest"}
         </h2>
@@ -256,6 +267,8 @@ function PlanPage() {
             Full requirements for {trip.name} →
           </Link>
         </div>
+          </>
+        )}
 
         <p className="mt-8 text-xs leading-relaxed text-muted-foreground">
           Lead times are estimates built from the appointment waits and decision windows recorded in
