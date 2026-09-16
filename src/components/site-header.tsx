@@ -1,0 +1,48 @@
+import { Link } from "@tanstack/react-router";
+
+export function SiteHeader() {
+  return (
+    <header className="border-b border-border bg-paper/80 backdrop-blur">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-4">
+        <Link to="/" className="group flex items-baseline gap-2">
+          <span className="font-display text-lg font-semibold tracking-tight">Visa Desk</span>
+          <span className="hidden text-xs uppercase tracking-[0.18em] text-muted-foreground sm:inline">
+            Europe / F-1
+          </span>
+        </Link>
+        <nav className="flex items-center gap-1 text-sm">
+          <Link
+            to="/"
+            activeOptions={{ exact: true }}
+            className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            activeProps={{ className: "bg-accent text-foreground" }}
+          >
+            Countries
+          </Link>
+          <Link
+            to="/compare"
+            className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            activeProps={{ className: "bg-accent text-foreground" }}
+          >
+            Compare
+          </Link>
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+export function SiteFooter() {
+  return (
+    <footer className="mt-16 border-t border-border bg-paper">
+      <div className="mx-auto max-w-5xl px-5 py-8 text-xs leading-relaxed text-muted-foreground">
+        <p className="max-w-3xl">
+          Guidance written for students living in the United States on an F-1 visa, reviewed
+          September 2026. Consulate rules, fees and processing times change without notice — the
+          official page linked on each country is always the authority. This site is not legal
+          advice; check with your university's international student office before you travel.
+        </p>
+      </div>
+    </footer>
+  );
+}
