@@ -92,10 +92,14 @@ function PlanPage() {
 
   const ranked = useMemo(
     () =>
-      countries
-        .map((c) => ({ country: c, lt: leadTime(c, held, holds) }))
-        .sort((a, b) => a.lt.weeks - b.lt.weeks || a.country.name.localeCompare(b.country.name)),
-    [held, form.holdsSchengen, form.holdsUk],
+      form.passportA
+        ? countries
+            .map((c) => ({ country: c, lt: leadTime(c, held, holds) }))
+            .sort(
+              (a, b) => a.lt.weeks - b.lt.weeks || a.country.name.localeCompare(b.country.name),
+            )
+        : [],
+    [form.passportA, form.holdsSchengen, form.holdsUk],
   );
 
   const schengen = ranked.filter((r) => r.country.bloc === "schengen").slice(0, 5);
