@@ -121,7 +121,7 @@ function PlanPage() {
             <input
               value={form.name}
               onChange={(e) => set("name", e.target.value)}
-              placeholder="Ben Shelton"
+              placeholder="For e.g. Ben Shelton"
               maxLength={80}
               className="w-full rounded-md border border-border bg-paper px-3 py-2 text-sm outline-none focus:border-seal"
             />
