@@ -157,7 +157,8 @@ type SchengenInput = Pick<
   extraDocs?: string[];
   extraNotes?: string[];
   extraLinks?: { label: string; url: string }[];
-  feeNote?: string;
+  fee?: string;
+  applyWindow?: string;
 };
 
 export function makeSchengenCountry(input: SchengenInput): Country {
@@ -169,11 +170,12 @@ export function makeSchengenCountry(input: SchengenInput): Country {
     need: "visa-required",
     blurb: input.blurb,
     visaType: "Schengen short-stay visa (Type C), tourism",
-    fee: input.feeNote ?? "EUR 90 (about USD 100) for adults",
+    fee: input.fee ?? "EUR 90 for adults, charged in dollars at about USD 97-105",
     serviceFee: input.serviceFee,
     processingTime: input.processingTime,
     appointmentWait: input.appointmentWait,
-    applyWindow: "Up to 6 months before travel, and no later than 15 days before",
+    applyWindow:
+      input.applyWindow ?? "Up to 6 months before travel, and no later than 15 days before",
     biometrics:
       "Required in person, unless you gave Schengen fingerprints in the last 59 months",
     steps: schengenSteps({ center: input.center, bookingHost: input.bookingHost }),
