@@ -43,7 +43,7 @@ interface CaseState {
 
 const initial: CaseState = {
   name: "",
-  passportA: "india",
+  passportA: "",
   passportB: "",
   status: "F-1 student",
   holdsSchengen: false,
@@ -61,7 +61,12 @@ function PlanPage() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setForm({ ...initial, ...JSON.parse(raw) });
+      if (raw) {
+        const saved = { ...initial, ...JSON.parse(raw) };
+        if (!passportById(saved.passportA)) saved.passportA = "";
+        if (saved.passportB && !passportById(saved.passportB)) saved.passportB = "";
+        setForm(saved);
+      }
     } catch {
       /* ignore */
     }
@@ -87,21 +92,29 @@ function PlanPage() {
 
   const ranked = useMemo(
     () =>
-      countries
-        .map((c) => ({ country: c, lt: leadTime(c, held, holds) }))
-        .sort((a, b) => a.lt.weeks - b.lt.weeks || a.country.name.localeCompare(b.country.name)),
-    [held, form.holdsSchengen, form.holdsUk],
+      form.passportA
+        ? countries
+            .map((c) => ({ country: c, lt: leadTime(c, held, holds) }))
+            .sort(
+              (a, b) => a.lt.weeks - b.lt.weeks || a.country.name.localeCompare(b.country.name),
+            )
+        : [],
+    [form.passportA, form.holdsSchengen, form.holdsUk],
   );
 
   const schengen = ranked.filter((r) => r.country.bloc === "schengen").slice(0, 5);
   const outside = ranked.filter((r) => r.country.bloc !== "schengen").slice(0, 5);
 
+  const hasPassport = Boolean(form.passportA);
   const trip = countries.find((c) => c.slug === form.tripCountry) ?? countries[0]!;
-  const tripLt = leadTime(trip, held, holds);
+  const tripLt = hasPassport ? leadTime(trip, held, holds) : null;
   const departure = form.departure ? new Date(`${form.departure}T00:00:00`) : null;
-  const earliest = addWeeks(today, tripLt.weeks);
-  const tooLate = departure ? departure < earliest : false;
-  const planSteps = backPlan(trip, tripLt, departure && !tooLate ? departure : earliest);
+  const earliest = tripLt ? addWeeks(today, tripLt.weeks) : null;
+  const tooLate = Boolean(departure && earliest && departure < earliest);
+  const planSteps =
+    tripLt && earliest
+      ? backPlan(trip, tripLt, departure && !tooLate ? departure : earliest)
+      : [];
 
   return (
     <div className="min-h-screen">
@@ -139,6 +152,7 @@ function PlanPage() {
 
           <Field label="Passport">
             <Select value={form.passportA} onChange={(v) => set("passportA", v)}>
+              <option value="">Please select your passport country</option>
               {passports.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.flag} {p.label}
@@ -185,7 +199,14 @@ function PlanPage() {
           </Field>
         </section>
 
-        {/* ---------------- earliest entry ---------------- */}
+        {!tripLt ? (
+          <p className="mt-10 rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
+            Please select your passport country above to see where you can go soonest and plan a
+            trip.
+          </p>
+        ) : (
+          <>
+            {/* ---------------- earliest entry ---------------- */}
         <h2 className="mt-12 text-2xl">
           {form.name ? `${form.name}, where you can go soonest` : "Where you can go soonest"}
         </h2>
@@ -219,12 +240,12 @@ function PlanPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             {tripLt.weeks === 0
               ? "You can leave as soon as you have a ticket."
-              : `Allow about ${tripLt.weeks} weeks from today. Earliest realistic departure: ${fmtDate(earliest)}.`}
+              : `Allow about ${tripLt.weeks} weeks from today. Earliest realistic departure: ${fmtDate(earliest!)}.`}
           </p>
           {departure && tooLate && (
             <p className="mt-3 rounded-md border border-seal/40 bg-seal/10 px-3 py-2 text-sm">
               {fmtDate(departure)} is too soon for this country. The plan below uses{" "}
-              {fmtDate(earliest)} instead.
+              {fmtDate(earliest!)} instead.
             </p>
           )}
 
@@ -250,6 +271,8 @@ function PlanPage() {
             Full requirements for {trip.name} →
           </Link>
         </div>
+          </>
+        )}
 
         <p className="mt-8 text-xs leading-relaxed text-muted-foreground">
           Lead times are estimates built from the appointment waits and decision windows recorded in

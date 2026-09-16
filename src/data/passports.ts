@@ -252,12 +252,6 @@ export const passports: Passport[] = [
     flag: "🛂",
     rules: { ...requiredEverywhere },
   },
-  {
-    id: "other-visa-free",
-    label: "Other — my passport is visa-free for Europe",
-    flag: "🛫",
-    rules: { ...visaFreeEverywhere, uk: "e-visa", turkiye: "e-visa" },
-  },
 ];
 
 export const passportById = (id: string) => passports.find((p) => p.id === id);
