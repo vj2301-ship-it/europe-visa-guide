@@ -139,6 +139,27 @@ function PlanPage() {
       ? backPlan(trip, tripLt, departure && !tooLate ? departure : earliest)
       : [];
 
+  const submitCase = () => {
+    if (!tripLt || !earliest) return;
+    const entry: TrackedCase = {
+      id: `${Date.now()}`,
+      savedAt: fmtDate(new Date()),
+      name: form.name.trim() || "Untitled case",
+      status: form.status,
+      passportLabel: passportById(form.passportA)?.label ?? "—",
+      secondPassportLabel: form.passportB ? (passportById(form.passportB)?.label ?? "") : "",
+      tripName: `${trip.flag} ${trip.name}`,
+      tripSlug: trip.slug,
+      accessLabel: accessLabel[tripLt.access],
+      weeks: tripLt.weeks,
+      earliest: fmtDate(earliest),
+      departure: departure ? fmtDate(departure) : "",
+    };
+    setCases((c) => [entry, ...c]);
+    setForm(initial);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <div className="min-h-screen">
       <SiteHeader />
