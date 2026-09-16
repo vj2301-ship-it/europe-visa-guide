@@ -29,6 +29,22 @@ export const Route = createFileRoute("/plan")({
 });
 
 const STORAGE_KEY = "visa-desk-case";
+const CASES_KEY = "visa-desk-cases";
+
+interface TrackedCase {
+  id: string;
+  savedAt: string;
+  name: string;
+  status: string;
+  passportLabel: string;
+  secondPassportLabel: string;
+  tripName: string;
+  tripSlug: string;
+  accessLabel: string;
+  weeks: number;
+  earliest: string;
+  departure: string;
+}
 
 interface CaseState {
   name: string;
@@ -57,6 +73,7 @@ const statuses = ["F-1 student", "J-1 exchange visitor", "H-1B worker", "Green c
 function PlanPage() {
   const [form, setForm] = useState<CaseState>(initial);
   const [loaded, setLoaded] = useState(false);
+  const [cases, setCases] = useState<TrackedCase[]>([]);
 
   useEffect(() => {
     try {
@@ -67,6 +84,8 @@ function PlanPage() {
         if (saved.passportB && !passportById(saved.passportB)) saved.passportB = "";
         setForm(saved);
       }
+      const rawCases = localStorage.getItem(CASES_KEY);
+      if (rawCases) setCases(JSON.parse(rawCases));
     } catch {
       /* ignore */
     }
@@ -76,6 +95,10 @@ function PlanPage() {
   useEffect(() => {
     if (loaded) localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
   }, [form, loaded]);
+
+  useEffect(() => {
+    if (loaded) localStorage.setItem(CASES_KEY, JSON.stringify(cases));
+  }, [cases, loaded]);
 
   const set = <K extends keyof CaseState>(k: K, v: CaseState[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
@@ -115,6 +138,27 @@ function PlanPage() {
     tripLt && earliest
       ? backPlan(trip, tripLt, departure && !tooLate ? departure : earliest)
       : [];
+
+  const submitCase = () => {
+    if (!tripLt || !earliest) return;
+    const entry: TrackedCase = {
+      id: `${Date.now()}`,
+      savedAt: fmtDate(new Date()),
+      name: form.name.trim() || "Untitled case",
+      status: form.status,
+      passportLabel: passportById(form.passportA)?.label ?? "—",
+      secondPassportLabel: form.passportB ? (passportById(form.passportB)?.label ?? "") : "",
+      tripName: `${trip.flag} ${trip.name}`,
+      tripSlug: trip.slug,
+      accessLabel: accessLabel[tripLt.access],
+      weeks: tripLt.weeks,
+      earliest: fmtDate(earliest),
+      departure: departure ? fmtDate(departure) : "",
+    };
+    setCases((c) => [entry, ...c]);
+    setForm(initial);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="min-h-screen">
@@ -271,8 +315,65 @@ function PlanPage() {
             Full requirements for {trip.name} →
           </Link>
         </div>
+
+        <button
+          type="button"
+          onClick={submitCase}
+          className="mt-6 rounded-md bg-ink px-4 py-2.5 text-sm text-paper transition hover:bg-seal"
+        >
+          Submit case &amp; start a new one
+        </button>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Your case moves to the tracker below and the form clears for a fresh one.
+        </p>
           </>
         )}
+
+        {cases.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-2xl">Tracked cases</h2>
+            <ul className="mt-5 space-y-4">
+              {cases.map((c) => (
+                <li key={c.id} className="rounded-xl border border-border bg-card p-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium">
+                        {c.name} — {c.tripName}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {c.passportLabel}
+                        {c.secondPassportLabel ? ` + ${c.secondPassportLabel}` : ""} · {c.status} ·
+                        saved {c.savedAt}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setCases((list) => list.filter((x) => x.id !== c.id))}
+                      className="text-xs text-muted-foreground underline underline-offset-4 hover:text-seal"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    {c.accessLabel} ·{" "}
+                    {c.weeks === 0
+                      ? "can leave as soon as you have a ticket"
+                      : `allow about ${c.weeks} weeks — earliest departure ${c.earliest}`}
+                    {c.departure ? ` · planned departure ${c.departure}` : ""}
+                  </p>
+                  <Link
+                    to="/country/$slug"
+                    params={{ slug: c.tripSlug }}
+                    className="mt-3 inline-block text-sm underline decoration-seal underline-offset-4 hover:text-seal"
+                  >
+                    Requirements →
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
 
         <p className="mt-8 text-xs leading-relaxed text-muted-foreground">
           Lead times are estimates built from the appointment waits and decision windows recorded in
