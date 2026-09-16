@@ -61,7 +61,12 @@ function PlanPage() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setForm({ ...initial, ...JSON.parse(raw) });
+      if (raw) {
+        const saved = { ...initial, ...JSON.parse(raw) };
+        if (!passportById(saved.passportA)) saved.passportA = "";
+        if (saved.passportB && !passportById(saved.passportB)) saved.passportB = "";
+        setForm(saved);
+      }
     } catch {
       /* ignore */
     }
@@ -139,6 +144,7 @@ function PlanPage() {
 
           <Field label="Passport">
             <Select value={form.passportA} onChange={(v) => set("passportA", v)}>
+              <option value="">Please select your passport country</option>
               {passports.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.flag} {p.label}
