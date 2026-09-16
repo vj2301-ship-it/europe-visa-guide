@@ -315,8 +315,65 @@ function PlanPage() {
             Full requirements for {trip.name} →
           </Link>
         </div>
+
+        <button
+          type="button"
+          onClick={submitCase}
+          className="mt-6 rounded-md bg-ink px-4 py-2.5 text-sm text-paper transition hover:bg-seal"
+        >
+          Submit case &amp; start a new one
+        </button>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Your case moves to the tracker below and the form clears for a fresh one.
+        </p>
           </>
         )}
+
+        {cases.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-2xl">Tracked cases</h2>
+            <ul className="mt-5 space-y-4">
+              {cases.map((c) => (
+                <li key={c.id} className="rounded-xl border border-border bg-card p-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium">
+                        {c.name} — {c.tripName}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {c.passportLabel}
+                        {c.secondPassportLabel ? ` + ${c.secondPassportLabel}` : ""} · {c.status} ·
+                        saved {c.savedAt}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setCases((list) => list.filter((x) => x.id !== c.id))}
+                      className="text-xs text-muted-foreground underline underline-offset-4 hover:text-seal"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    {c.accessLabel} ·{" "}
+                    {c.weeks === 0
+                      ? "can leave as soon as you have a ticket"
+                      : `allow about ${c.weeks} weeks — earliest departure ${c.earliest}`}
+                    {c.departure ? ` · planned departure ${c.departure}` : ""}
+                  </p>
+                  <Link
+                    to="/country/$slug"
+                    params={{ slug: c.tripSlug }}
+                    className="mt-3 inline-block text-sm underline decoration-seal underline-offset-4 hover:text-seal"
+                  >
+                    Requirements →
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
 
         <p className="mt-8 text-xs leading-relaxed text-muted-foreground">
           Lead times are estimates built from the appointment waits and decision windows recorded in
