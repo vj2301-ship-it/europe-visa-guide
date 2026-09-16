@@ -143,6 +143,8 @@ export const schengenNotes = (extra: string[] = []): string[] => [
   "A Schengen visa says nothing about getting back into the United States. Your re-entry depends on a valid F-1 stamp and a valid I-20 travel signature — check both before you book.",
   "If your F-1 visa stamp has expired you can still travel, but you will need a new stamp at a US consulate abroad before returning, which can take weeks. Most advisors suggest avoiding that during a short trip.",
   "Do not buy non-refundable flights before the visa is issued. Consulates accept reservations; they do not require paid tickets.",
+  "ETIAS is not in operation as of September 2026 and has slipped past its 2026 target. It would not replace your visa in any case — it is for nationalities that travel to Europe visa-free.",
+  "Consulates apply the fee in dollars at their own exchange rate, and several update it monthly or quarterly. Check the current figure on the day you pay.",
   ...extra,
 ];
 
