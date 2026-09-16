@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CompareRouteImport } from './routes/compare'
+import { Route as PlanRouteImport } from './routes/plan'
 import { Route as CountrySlugRouteImport } from './routes/country.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const CompareRoute = CompareRouteImport.update({
   path: '/compare',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlanRoute = PlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CountrySlugRoute = CountrySlugRouteImport.update({
   id: '/country/$slug',
   path: '/country/$slug',
@@ -32,30 +38,34 @@ const CountrySlugRoute = CountrySlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/compare': typeof CompareRoute
+  '/plan': typeof PlanRoute
   '/country/$slug': typeof CountrySlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/compare': typeof CompareRoute
+  '/plan': typeof PlanRoute
   '/country/$slug': typeof CountrySlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/compare': typeof CompareRoute
+  '/plan': typeof PlanRoute
   '/country/$slug': typeof CountrySlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/compare' | '/country/$slug'
+  fullPaths: '/' | '/compare' | '/plan' | '/country/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/compare' | '/country/$slug'
-  id: '__root__' | '/' | '/compare' | '/country/$slug'
+  to: '/' | '/compare' | '/plan' | '/country/$slug'
+  id: '__root__' | '/' | '/compare' | '/plan' | '/country/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CompareRoute: typeof CompareRoute
+  PlanRoute: typeof PlanRoute
   CountrySlugRoute: typeof CountrySlugRoute
 }
 
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompareRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/plan': {
+      id: '/plan'
+      path: '/plan'
+      fullPath: '/plan'
+      preLoaderRoute: typeof PlanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/country/$slug': {
       id: '/country/$slug'
       path: '/country/$slug'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CompareRoute: CompareRoute,
+  PlanRoute: PlanRoute,
   CountrySlugRoute: CountrySlugRoute,
 }
 export const routeTree = rootRouteImport
