@@ -73,6 +73,7 @@ const statuses = ["F-1 student", "J-1 exchange visitor", "H-1B worker", "Green c
 function PlanPage() {
   const [form, setForm] = useState<CaseState>(initial);
   const [loaded, setLoaded] = useState(false);
+  const [cases, setCases] = useState<TrackedCase[]>([]);
 
   useEffect(() => {
     try {
@@ -83,6 +84,8 @@ function PlanPage() {
         if (saved.passportB && !passportById(saved.passportB)) saved.passportB = "";
         setForm(saved);
       }
+      const rawCases = localStorage.getItem(CASES_KEY);
+      if (rawCases) setCases(JSON.parse(rawCases));
     } catch {
       /* ignore */
     }
@@ -92,6 +95,10 @@ function PlanPage() {
   useEffect(() => {
     if (loaded) localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
   }, [form, loaded]);
+
+  useEffect(() => {
+    if (loaded) localStorage.setItem(CASES_KEY, JSON.stringify(cases));
+  }, [cases, loaded]);
 
   const set = <K extends keyof CaseState>(k: K, v: CaseState[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
