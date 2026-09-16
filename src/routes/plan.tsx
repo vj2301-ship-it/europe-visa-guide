@@ -29,6 +29,22 @@ export const Route = createFileRoute("/plan")({
 });
 
 const STORAGE_KEY = "visa-desk-case";
+const CASES_KEY = "visa-desk-cases";
+
+interface TrackedCase {
+  id: string;
+  savedAt: string;
+  name: string;
+  status: string;
+  passportLabel: string;
+  secondPassportLabel: string;
+  tripName: string;
+  tripSlug: string;
+  accessLabel: string;
+  weeks: number;
+  earliest: string;
+  departure: string;
+}
 
 interface CaseState {
   name: string;
