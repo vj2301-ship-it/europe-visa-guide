@@ -316,20 +316,36 @@ function PlanPage() {
           </Link>
         </div>
 
-        <button
-          type="button"
-          onClick={submitCase}
-          className="mt-6 rounded-md bg-ink px-4 py-2.5 text-sm text-paper transition hover:bg-seal"
-        >
-          Submit case &amp; start a new one
-        </button>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Your case moves to the tracker below and the form clears for a fresh one.
-        </p>
+        {user ? (
+          <>
+            <button
+              type="button"
+              onClick={submitCase}
+              className="mt-6 rounded-md bg-ink px-4 py-2.5 text-sm text-paper transition hover:bg-seal"
+            >
+              Submit case &amp; start a new one
+            </button>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Your case moves to the tracker below and the form clears for a fresh one.
+            </p>
+          </>
+        ) : (
+          <div className="mt-6 rounded-xl border border-border bg-card p-5">
+            <p className="text-sm text-muted-foreground">
+              Sign in to save this case and see your tracked cases.
+            </p>
+            <Link
+              to="/auth"
+              className="mt-3 inline-block rounded-md bg-ink px-4 py-2.5 text-sm text-paper transition hover:bg-seal"
+            >
+              Sign in to track cases
+            </Link>
+          </div>
+        )}
           </>
         )}
 
-        {cases.length > 0 && (
+        {user && cases.length > 0 && (
           <section className="mt-12">
             <h2 className="text-2xl">Tracked cases</h2>
             <ul className="mt-5 space-y-4">

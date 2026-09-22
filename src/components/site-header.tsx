@@ -43,6 +43,27 @@ export function SiteHeader() {
           >
             Compare
           </Link>
+          {user ? (
+            <span className="ml-2 flex items-center gap-2">
+              <span className="hidden max-w-[12rem] truncate text-xs text-muted-foreground sm:inline">
+                {user.email}
+              </span>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                Sign out
+              </button>
+            </span>
+          ) : (
+            <Link
+              to="/auth"
+              className="ml-2 rounded-md bg-ink px-3 py-1.5 text-paper transition-colors hover:bg-seal"
+            >
+              Sign in
+            </Link>
+          )}
         </nav>
       </div>
     </header>
