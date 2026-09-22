@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { SiteFooter, SiteHeader } from "@/components/site-header";
 import { countries } from "@/data/countries";
 import { accessLabel, passportById, passports, type Passport } from "@/data/passports";
+import { useAuth } from "@/hooks/use-auth";
 import { addWeeks, backPlan, fmtDate, leadTime } from "@/lib/lead-time";
 
 export const Route = createFileRoute("/plan")({
