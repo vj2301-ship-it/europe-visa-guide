@@ -75,6 +75,7 @@ function PlanPage() {
   const [form, setForm] = useState<CaseState>(initial);
   const [loaded, setLoaded] = useState(false);
   const [cases, setCases] = useState<TrackedCase[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
     try {
